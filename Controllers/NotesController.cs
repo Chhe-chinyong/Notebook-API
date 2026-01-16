@@ -41,9 +41,9 @@ public class NotesController : ControllerBase
             var notes = await _noteRepository.GetByUserIdAsync(userId);
             return Ok(notes);
         }
-        catch (Exception)
+        catch (Exception ex)
         {
-            return StatusCode(500, new { message = "An error occurred while fetching notes" });
+            return StatusCode(500, new { message = "An error occurred while fetching notes", error = ex.Message });
         }
     }
 
