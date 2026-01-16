@@ -49,3 +49,4 @@ artifacts/
 .env.*.local
 
 appsettings.json
+appsettings.Development.json
