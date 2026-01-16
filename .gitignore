@@ -47,3 +47,5 @@ artifacts/
 .env
 .env.local
 .env.*.local
+
+appsettings.json
