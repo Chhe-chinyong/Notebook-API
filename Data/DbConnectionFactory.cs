@@ -1,5 +1,7 @@
 using System.Data;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Data.SqlClient;
+using Microsoft.Extensions.Hosting;
 
 namespace NotebookApi.Data;
 
@@ -7,10 +9,30 @@ public class DbConnectionFactory : IDbConnectionFactory
 {
     private readonly string _connectionString;
 
-    public DbConnectionFactory(IConfiguration configuration)
+    public DbConnectionFactory(IConfiguration configuration, IWebHostEnvironment environment)
     {
-        _connectionString = configuration.GetConnectionString("DefaultConnection") 
-            ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+        string? connectionString;
+        
+        // If not development, try to get from environment variables first
+        if (!environment.IsDevelopment())
+        {
+            // Try environment variable with double underscore format (ConnectionStrings:DefaultConnection)
+            connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
+                ?? Environment.GetEnvironmentVariable("CONNECTIONSTRINGS__DEFAULTCONNECTION")
+                ?? configuration.GetConnectionString("DefaultConnection");
+        }
+        else
+        {
+            // In development, use configuration (appsettings.Development.json)
+            connectionString = configuration.GetConnectionString("DefaultConnection");
+        }
+
+        if (string.IsNullOrWhiteSpace(connectionString))
+        {
+            throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+        }
+
+        _connectionString = connectionString;
     }
 
     public IDbConnection CreateConnection()

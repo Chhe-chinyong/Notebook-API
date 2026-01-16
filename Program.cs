@@ -4,6 +4,14 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NotebookApi.Data;
 using NotebookApi.Services;
+using DotNetEnv;
+
+// Load .env file if it exists (for production/local development)
+var envFile = Path.Combine(Directory.GetCurrentDirectory(), ".env");
+if (File.Exists(envFile))
+{
+    Env.Load(envFile);
+}
 
 var builder = WebApplication.CreateBuilder(args);
 

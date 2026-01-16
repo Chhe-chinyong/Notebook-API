@@ -35,7 +35,25 @@
 
 **Connection String (Required):**
 
-Set the connection string as an environment variable for security:
+The application supports `.env` files for configuration. Create a `.env` file in the project root with the following format:
+
+```env
+CONNECTIONSTRINGS__DEFAULTCONNECTION=Server=localhost;Database=NotebookApp;Integrated Security=true;TrustServerCertificate=true;
+```
+
+**For Production:**
+```env
+CONNECTIONSTRINGS__DEFAULTCONNECTION=Server=/cloudsql/project-8f33c2c1-6350-4a64-90f:asia-southeast1:sql-server-techbodia;Database=NotebookApp;User ID=sqlserver;Password=YOUR_PASSWORD;Encrypt=True;TrustServerCertificate=True;
+```
+
+**Note:** 
+- The `.env` file is automatically loaded when the application starts
+- The `.env` file is already in `.gitignore` and will not be committed to version control
+- Use double underscores (`__`) to represent nested configuration keys (e.g., `ConnectionStrings:DefaultConnection` becomes `CONNECTIONSTRINGS__DEFAULTCONNECTION`)
+
+**Alternative: Environment Variables**
+
+You can also set the connection string as an environment variable directly:
 
 **On macOS/Linux:**
 ```bash
@@ -52,14 +70,11 @@ $env:ConnectionStrings__DefaultConnection="Server=localhost;Database=NotebookApp
 set ConnectionStrings__DefaultConnection=Server=localhost;Database=NotebookApp;Integrated Security=true;TrustServerCertificate=true;
 ```
 
-**For Development (temporary):**
-You can also create a `.env` file in the project root (make sure it's in `.gitignore`) and use a tool like `dotenv` or set it in your IDE's run configuration.
-
 **JWT Configuration:**
 
 The JWT settings are in `appsettings.json`. **Important:** Change the JWT Secret to a secure random string in production!
 
-**Note:** Connection strings are stored in environment variables for security. The `appsettings.json` files have empty connection strings as placeholders.
+**Note:** Connection strings are stored in environment variables or `.env` files for security. The `appsettings.json` files have empty connection strings as placeholders.
 
 ### 3. Install Dependencies
 
