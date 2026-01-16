@@ -1,0 +1,146 @@
+# Notebook API Backend
+
+.NET Core 9.0 Web API with Dapper ORM and SQL Server for the Notebook application.
+
+## Features
+
+- JWT Authentication & Authorization
+- User Registration and Login
+- CRUD Operations for Notes
+- User Ownership Validation (users can only access their own notes)
+- Dapper ORM for database access
+- SQL Server database
+
+## Prerequisites
+
+- .NET 9.0 SDK
+- SQL Server (LocalDB, Express, or full instance)
+- Visual Studio 2022, VS Code, or Rider
+
+## Setup
+
+### 1. Database Setup
+
+1. Open SQL Server Management Studio (SSMS) or use `sqlcmd`
+2. Run the database script:
+   ```sql
+   -- Execute Database/Scripts/CreateTables.sql
+   ```
+   Or connect to your SQL Server and run:
+   ```bash
+   sqlcmd -S localhost -i Database/Scripts/CreateTables.sql
+   ```
+
+### 2. Configuration
+
+**Connection String (Required):**
+
+Set the connection string as an environment variable for security:
+
+**On macOS/Linux:**
+```bash
+export ConnectionStrings__DefaultConnection="Server=localhost;Database=NotebookApp;Integrated Security=true;TrustServerCertificate=true;"
+```
+
+**On Windows (PowerShell):**
+```powershell
+$env:ConnectionStrings__DefaultConnection="Server=localhost;Database=NotebookApp;Integrated Security=true;TrustServerCertificate=true;"
+```
+
+**On Windows (CMD):**
+```cmd
+set ConnectionStrings__DefaultConnection=Server=localhost;Database=NotebookApp;Integrated Security=true;TrustServerCertificate=true;
+```
+
+**For Development (temporary):**
+You can also create a `.env` file in the project root (make sure it's in `.gitignore`) and use a tool like `dotenv` or set it in your IDE's run configuration.
+
+**JWT Configuration:**
+
+The JWT settings are in `appsettings.json`. **Important:** Change the JWT Secret to a secure random string in production!
+
+**Note:** Connection strings are stored in environment variables for security. The `appsettings.json` files have empty connection strings as placeholders.
+
+### 3. Install Dependencies
+
+```bash
+cd backend
+dotnet restore
+```
+
+### 4. Run the API
+
+```bash
+dotnet run
+```
+
+The API will be available at:
+- HTTP: `http://localhost:5266`
+- HTTPS: `https://localhost:7032`
+- Swagger UI: `http://localhost:5266/swagger` (in Development mode)
+
+## API Endpoints
+
+### Authentication
+
+- `POST /api/auth/register` - Register a new user
+  - Request: `{ "name": "John Doe", "email": "john@example.com", "password": "password123" }`
+  - Response: `{ "user": { "id": "...", "email": "...", "name": "..." }, "token": "..." }`
+
+- `POST /api/auth/login` - Login user
+  - Request: `{ "email": "john@example.com", "password": "password123" }`
+  - Response: `{ "user": { "id": "...", "email": "...", "name": "..." }, "token": "..." }`
+
+### Notes (Requires Authentication)
+
+All note endpoints require the `Authorization: Bearer {token}` header.
+
+- `GET /api/notes` - Get all notes for authenticated user
+- `GET /api/notes/{id}` - Get note by ID
+- `POST /api/notes` - Create a new note
+  - Request: `{ "title": "My Note", "content": "Note content" }`
+- `PUT /api/notes/{id}` - Update a note
+  - Request: `{ "title": "Updated Title", "content": "Updated content" }`
+- `DELETE /api/notes/{id}` - Delete a note
+
+## Testing with Swagger
+
+1. Start the API: `dotnet run`
+2. Open Swagger UI: `https://localhost:7032/swagger`
+3. Register a new user via `/api/auth/register`
+4. Copy the token from the response
+5. Click "Authorize" button in Swagger
+6. Enter: `Bearer {your-token}`
+7. Test the notes endpoints
+
+## Project Structure
+
+```
+backend/
+├── Controllers/          # API Controllers
+├── Data/                # Dapper repositories
+├── Models/              # Domain models and DTOs
+├── Services/            # Business logic services
+├── Database/            # SQL scripts
+└── Program.cs           # Application entry point
+```
+
+## Security Notes
+
+- Passwords are hashed using BCrypt
+- JWT tokens expire after 24 hours (configurable)
+- All note operations validate user ownership
+- CORS is configured for frontend origins only
+- SQL injection prevention via Dapper parameterized queries
+
+## Integration with Frontend
+
+The API is designed to match the frontend's expected interface:
+- Response formats match TypeScript interfaces
+- String IDs (Guid.ToString()) for compatibility
+- ISO 8601 date format
+- Standard HTTP status codes
+
+## License
+
+MIT
