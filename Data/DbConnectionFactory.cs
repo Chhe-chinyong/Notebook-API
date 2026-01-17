@@ -35,7 +35,7 @@ public class DbConnectionFactory : IDbConnectionFactory
             var dataSource = builder.DataSource;
             
             // If DataSource contains /cloudsql/, rebuild connection string to ensure DataSource is used (not Server)
-            if (!string.IsNullOrWhiteSpace(dataSource) && dataSource.StartsWith("/cloudsql/"))
+            if (!string.IsNullOrWhiteSpace(dataSource) && dataSource.StartsWith("/google"))
             {
                 var rebuiltBuilder = new SqlConnectionStringBuilder
                 {
