@@ -121,7 +121,7 @@ GOOGLE_CLOUD_SQL_PASSWORD=your_password_here
 
 **Option B: Using Connection String Environment Variable**
 ```
-ConnectionStrings__DefaultConnection=Server=/cloudsql/project-8f33c2c1-6350-4a64-90f:asia-southeast1:sql-server-techbodia;Database=NotebookApp;User ID=sqlserver;Password=your_password_here;Encrypt=True;TrustServerCertificate=True;
+ConnectionStrings__DefaultConnection=Server=/cloudsql/project-8f33c2c1-6350-4a64-90f:asia-southeast1:sql-server-techbodia;Database=NotebookApp;User ID=sqlserver;Password=Helloworld01.;Encrypt=True;TrustServerCertificate=True;
 ```
 
 **Via Google Cloud Console:**
