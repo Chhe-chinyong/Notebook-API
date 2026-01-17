@@ -76,6 +76,116 @@ The JWT settings are in `appsettings.json`. **Important:** Change the JWT Secret
 
 **Note:** Connection strings are stored in environment variables or `.env` files for security. The `appsettings.json` files have empty connection strings as placeholders.
 
+### 2.1. Google Cloud Run to Cloud SQL Configuration
+
+When deploying to Google Cloud Run and connecting to Cloud SQL, you need to complete the following steps:
+
+#### Step 1: Connect Cloud Run Service to Cloud SQL Instance
+
+**Via Google Cloud Console:**
+1. Go to [Cloud Run](https://console.cloud.google.com/run)
+2. Select your service
+3. Click "Edit & Deploy New Revision"
+4. Go to the "Connections" tab
+5. Under "Cloud SQL connections", click "Add Connection"
+6. Select your Cloud SQL instance
+7. Click "Deploy"
+
+**Via gcloud CLI:**
+```bash
+gcloud run services update YOUR_SERVICE_NAME \
+  --add-cloudsql-instances=PROJECT_ID:REGION:INSTANCE_NAME \
+  --region=REGION
+```
+
+Example:
+```bash
+gcloud run services update notebook-api \
+  --add-cloudsql-instances=project-8f33c2c1-6350-4a64-90f:asia-southeast1:sql-server-techbodia \
+  --region=asia-southeast1
+```
+
+**Important:** This step is **required** for Cloud Run to access Cloud SQL. Without this connection, the application will fail with connection errors.
+
+#### Step 2: Set Environment Variables in Cloud Run
+
+Set the following environment variables in your Cloud Run service:
+
+**Option A: Using Individual Environment Variables (Recommended)**
+```
+GOOGLE_CLOUD_SQL_INSTANCE=/cloudsql/project-8f33c2c1-6350-4a64-90f:asia-southeast1:sql-server-techbodia
+GOOGLE_CLOUD_SQL_DATABASE=NotebookApp
+GOOGLE_CLOUD_SQL_USER_ID=sqlserver
+GOOGLE_CLOUD_SQL_PASSWORD=your_password_here
+```
+
+**Option B: Using Connection String Environment Variable**
+```
+ConnectionStrings__DefaultConnection=Server=/cloudsql/project-8f33c2c1-6350-4a64-90f:asia-southeast1:sql-server-techbodia;Database=NotebookApp;User ID=sqlserver;Password=your_password_here;Encrypt=True;TrustServerCertificate=True;
+```
+
+**Via Google Cloud Console:**
+1. Go to Cloud Run → Your Service → Edit & Deploy New Revision
+2. Go to "Variables & Secrets" tab
+3. Add each environment variable
+4. Click "Deploy"
+
+**Via gcloud CLI:**
+```bash
+gcloud run services update YOUR_SERVICE_NAME \
+  --set-env-vars="GOOGLE_CLOUD_SQL_INSTANCE=/cloudsql/PROJECT:REGION:INSTANCE,GOOGLE_CLOUD_SQL_DATABASE=NotebookApp,GOOGLE_CLOUD_SQL_USER_ID=sqlserver,GOOGLE_CLOUD_SQL_PASSWORD=your_password" \
+  --region=REGION
+```
+
+#### Connection String Format for Cloud SQL
+
+The connection string must use the Unix socket path format:
+```
+Server=/cloudsql/PROJECT_ID:REGION:INSTANCE_NAME
+```
+
+Or when using `DataSource`:
+```
+DataSource=/cloudsql/PROJECT_ID:REGION:INSTANCE_NAME
+```
+
+**Important Notes:**
+- The `/cloudsql/` prefix is required for Unix socket connections
+- The format is: `/cloudsql/PROJECT_ID:REGION:INSTANCE_NAME`
+- Do NOT use IP addresses or hostnames for Cloud SQL connections from Cloud Run
+- Ensure `Encrypt=True` and `TrustServerCertificate=True` (or `False` with proper certificates)
+
+#### Troubleshooting Cloud SQL Connection Issues
+
+If you encounter "Connection string is not valid" or "server was not found" errors:
+
+1. **Verify Cloud Run is connected to Cloud SQL:**
+   ```bash
+   gcloud run services describe YOUR_SERVICE_NAME --region=REGION --format="value(spec.template.spec.containers[0].env)"
+   ```
+   Look for `CLOUD_SQL_CONNECTION_NAME` or check the Connections tab in Console.
+
+2. **Check environment variables are set:**
+   ```bash
+   gcloud run services describe YOUR_SERVICE_NAME --region=REGION --format="value(spec.template.spec.containers[0].env)"
+   ```
+
+3. **Verify connection string format:**
+   - Must start with `/cloudsql/`
+   - Format: `/cloudsql/PROJECT_ID:REGION:INSTANCE_NAME`
+   - All required parameters (Database, User ID, Password) must be present
+
+4. **Check Cloud SQL instance status:**
+   ```bash
+   gcloud sql instances describe INSTANCE_NAME
+   ```
+
+5. **Review application logs:**
+   ```bash
+   gcloud run services logs read YOUR_SERVICE_NAME --region=REGION
+   ```
+   The application logs connection information (without passwords) to help diagnose issues.
+
 ### 3. Install Dependencies
 
 ```bash
