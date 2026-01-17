@@ -63,7 +63,7 @@ public class DbConnectionFactory : IDbConnectionFactory
             _logger?.LogWarning(ex, "Could not parse connection string for validation, using as-is");
         }
 
-        _connectionString = "Server=localhost,1433;Database=NotebookApp;User ID=sqlserver;Password=Helloworld01.;Encrypt=True;TrustServerCertificate=True;";
+        _connectionString = connectionString;
     }
 
     public IDbConnection CreateConnection()
