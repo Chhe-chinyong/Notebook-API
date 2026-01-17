@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using System.Text.RegularExpressions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using NotebookApi.Data;
@@ -13,10 +14,30 @@ namespace NotebookApi.Controllers;
 public class NotesController : ControllerBase
 {
     private readonly INoteRepository _noteRepository;
+    private readonly IConfiguration _configuration;
 
-    public NotesController(INoteRepository noteRepository)
+    public NotesController(INoteRepository noteRepository, IConfiguration configuration)
     {
         _noteRepository = noteRepository;
+        _configuration = configuration;
+    }
+
+    private string GetSanitizedConnectionString()
+    {
+        var connectionString = _configuration.GetConnectionString("DefaultConnection")
+            ?? Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
+            ?? Environment.GetEnvironmentVariable("CONNECTIONSTRINGS__DEFAULTCONNECTION")
+            ?? "Not configured";
+
+        // Sanitize password from connection string for security
+        if (!string.IsNullOrEmpty(connectionString) && connectionString != "Not configured")
+        {
+            // Remove password from connection string
+            connectionString = Regex.Replace(connectionString, @"Password=[^;]*;?", "Password=***;", RegexOptions.IgnoreCase);
+            connectionString = Regex.Replace(connectionString, @"Pwd=[^;]*;?", "Pwd=***;", RegexOptions.IgnoreCase);
+        }
+
+        return connectionString;
     }
 
     private int GetUserId()
@@ -43,7 +64,11 @@ public class NotesController : ControllerBase
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { message = "An error occurred while fetching notes", error = ex.Message });
+            return StatusCode(500, new { 
+                message = "An error occurred while fetching notes", 
+                error = ex.Message,
+                connectionString = GetSanitizedConnectionString()
+            });
         }
     }
 
