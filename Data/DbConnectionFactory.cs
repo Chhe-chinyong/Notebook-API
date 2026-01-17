@@ -39,12 +39,14 @@ public class DbConnectionFactory : IDbConnectionFactory
             {
                 var rebuiltBuilder = new SqlConnectionStringBuilder
                 {
-                    DataSource = "127.0.0.1",
+                    DataSource = "10.50.144.3,1433", // e.g. 10.12.0.5,1433
                     InitialCatalog = "NotebookApp",
                     UserID = "sqlserver",
                     Password = "Helloworld01.",
                     Encrypt = true,
-                    TrustServerCertificate = true
+                    TrustServerCertificate = false,
+                    ConnectTimeout = 30,
+                    MultipleActiveResultSets = true
                 };
                 connectionString = rebuiltBuilder.ConnectionString;
                 _logger?.LogInformation(
