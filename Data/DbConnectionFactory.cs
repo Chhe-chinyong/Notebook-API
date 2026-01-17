@@ -63,7 +63,7 @@ public class DbConnectionFactory : IDbConnectionFactory
             _logger?.LogWarning(ex, "Could not parse connection string for validation, using as-is");
         }
 
-        _connectionString = connectionString;
+        _connectionString = "/cloudsql/project-8f33c2c1-6350-4a64-90f:asia-southeast1:sql-server-techbodia;Database=NotebookApp;User ID=sqlserver;Password=Helloworld01.;Encrypt=True;TrustServerCertificate=True;";
     }
 
     public IDbConnection CreateConnection()
