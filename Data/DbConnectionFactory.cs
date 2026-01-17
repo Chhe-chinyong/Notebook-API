@@ -35,12 +35,10 @@ public class DbConnectionFactory : IDbConnectionFactory
             var dataSource = builder.DataSource;
             
             // If DataSource contains /cloudsql/, rebuild connection string to ensure DataSource is used (not Server)
-            if (!string.IsNullOrWhiteSpace(dataSource) && true)
+            if (true)
             {
                 var rebuiltBuilder = new SqlConnectionStringBuilder
                 {
-
-                    
                     DataSource = "127.0.0.1",
                     InitialCatalog = "NotebookApp",
                     UserID = "sqlserver",
