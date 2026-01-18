@@ -35,18 +35,16 @@ public class DbConnectionFactory : IDbConnectionFactory
             var dataSource = builder.DataSource;
             
             // If DataSource contains /cloudsql/, rebuild connection string to ensure DataSource is used (not Server)
-            if (true)
+            if (!string.IsNullOrWhiteSpace(dataSource) && dataSource.StartsWith("/google/"))
             {
                 var rebuiltBuilder = new SqlConnectionStringBuilder
                 {
-                    DataSource = "10.50.144.3,1433", // e.g. 10.12.0.5,1433
-                    InitialCatalog = "NotebookApp",
-                    UserID = "sqlserver",
-                    Password = "Helloworld01.",
-                    Encrypt = true,
-                    TrustServerCertificate = false,
-                    ConnectTimeout = 30,
-                    MultipleActiveResultSets = true
+                    DataSource = dataSource,
+                    InitialCatalog = builder.InitialCatalog,
+                    UserID = builder.UserID,
+                    Password = builder.Password,
+                    Encrypt = builder.Encrypt,
+                    TrustServerCertificate = builder.TrustServerCertificate
                 };
                 connectionString = rebuiltBuilder.ConnectionString;
                 _logger?.LogInformation(

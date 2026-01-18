@@ -40,3 +40,6 @@ BEGIN
     CREATE INDEX IX_Notes_CreatedAt ON t_note(CreatedAt);
 END
 GO
+
+
+select * from t_user
