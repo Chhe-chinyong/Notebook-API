@@ -83,52 +83,7 @@ If you prefer to use a local SQL Server installation:
    ```bash
    sqlcmd -S localhost -i Database/Scripts/CreateTables.sql
    ```
-
-### 3. Configuration
-
-**Connection String (Required):**
-
-The application supports `.env` files for configuration. Create a `.env` file in the project root with the following format:
-
-```env
-CONNECTIONSTRINGS__DEFAULTCONNECTION=Server=localhost;Database=NotebookApp;Integrated Security=true;TrustServerCertificate=true;
-```
-
-**For Production:**
-```env
-CONNECTIONSTRINGS__DEFAULTCONNECTION=Server=your-server-name;Database=NotebookApp;User ID=your-username;Password=YOUR_PASSWORD;Encrypt=True;TrustServerCertificate=True;
-```
-
-**Note:** 
-- The `.env` file is automatically loaded when the application starts
-- The `.env` file is already in `.gitignore` and will not be committed to version control
-- Use double underscores (`__`) to represent nested configuration keys (e.g., `ConnectionStrings:DefaultConnection` becomes `CONNECTIONSTRINGS__DEFAULTCONNECTION`)
-
-**Alternative: Environment Variables**
-
-You can also set the connection string as an environment variable directly:
-
-**On macOS/Linux:**
-```bash
-export ConnectionStrings__DefaultConnection="Server=localhost;Database=NotebookApp;Integrated Security=true;TrustServerCertificate=true;"
-```
-
-**On Windows (PowerShell):**
-```powershell
-$env:ConnectionStrings__DefaultConnection="Server=localhost;Database=NotebookApp;Integrated Security=true;TrustServerCertificate=true;"
-```
-
-**On Windows (CMD):**
-```cmd
-set ConnectionStrings__DefaultConnection=Server=localhost;Database=NotebookApp;Integrated Security=true;TrustServerCertificate=true;
-```
-
-**JWT Configuration:**
-
-The JWT settings are in `appsettings.json`. **Important:** Change the JWT Secret to a secure random string in production!
-
-**Note:** Connection strings are stored in environment variables or `.env` files for security. The `appsettings.json` files have empty connection strings as placeholders.
-
+   
 #### Configuration Files
 
 **`appsettings.json`** - Base configuration file used in all environments:
@@ -195,7 +150,7 @@ dotnet run
 
 The API will be available at:
 - HTTP: `http://localhost:5266`
-- HTTPS: `https://localhost:7032`
+- HTTPS: `https://localhost:5266`
 - Swagger UI: `http://localhost:5266/swagger` (in Development mode)
 
 ## API Endpoints
@@ -225,7 +180,7 @@ All note endpoints require the `Authorization: Bearer {token}` header.
 ## Testing with Swagger
 
 1. Start the API: `dotnet run`
-2. Open Swagger UI: `https://localhost:7032/swagger`
+2. Open Swagger UI: `https://localhost:5266/swagger`
 3. Register a new user via `/api/auth/register`
 4. Copy the token from the response
 5. Click "Authorize" button in Swagger
